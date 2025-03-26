@@ -26,8 +26,8 @@ import re
 # 1. How will the client know to talk to the proxy?
 #     Client will need to set the proxy address and port in their browser or network settings
 # 2. What host and port number will the proxy be on?
-#     Host: my computer?
-#     Port: whatever I choose?
+#     Host: localhost
+#     Port: 8080
 # 3. The proxy may need to connect to the origin server 
 # (if the web object is not in the cache), what host and 
 # port number will the proxy connect to?
@@ -51,6 +51,7 @@ proxyPort = int(args.port)
 try:
   # Create a server socket
   # ~~~~ INSERT CODE ~~~~
+  proxySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   # ~~~~ END CODE INSERT ~~~~
   print ('Created socket')
 except:
@@ -58,8 +59,9 @@ except:
   sys.exit()
 
 try:
-  # Bind the the server socket to a host and port
+  # Bind the server socket to a host and port
   # ~~~~ INSERT CODE ~~~~
+
   # ~~~~ END CODE INSERT ~~~~
   print ('Port is bound')
 except:
@@ -69,6 +71,7 @@ except:
 try:
   # Listen on the server socket
   # ~~~~ INSERT CODE ~~~~
+
   # ~~~~ END CODE INSERT ~~~~
   print ('Listening to socket')
 except:
@@ -83,6 +86,7 @@ while True:
   # Accept connection from client and store in the clientSocket
   try:
     # ~~~~ INSERT CODE ~~~~
+
     # ~~~~ END CODE INSERT ~~~~
     print ('Received a connection')
   except:
