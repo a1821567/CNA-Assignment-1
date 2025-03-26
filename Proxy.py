@@ -24,7 +24,8 @@ import re
 
 # STEP 2
 # 1. How will the client know to talk to the proxy?
-#     Client will need to set the proxy address and port in their browser or network settings
+#     Client may set the proxy address and port in their browser or network settings.
+#     Can also use curl command.
 # 2. What host and port number will the proxy be on?
 #     Host: localhost
 #     Port: 8080
@@ -32,7 +33,7 @@ import re
 # (if the web object is not in the cache), what host and 
 # port number will the proxy connect to?
 #     Default port: 80
-#     Host: from UR
+#     Host: from URI
 # 4. Where will the proxy get the web object information?
 #     From the origin server (make a GET request)
 
@@ -150,6 +151,7 @@ while True:
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
+    clientSocket.sendall(cacheData)
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
@@ -160,6 +162,7 @@ while True:
     # Create a socket to connect to origin server
     # and store in originServerSocket
     # ~~~~ INSERT CODE ~~~~
+    originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # ~~~~ END CODE INSERT ~~~~
 
     print ('Connecting to:\t\t' + hostname + '\n')
@@ -168,6 +171,7 @@ while True:
       address = socket.gethostbyname(hostname)
       # Connect to the origin server
       # ~~~~ INSERT CODE ~~~~
+      originServerSocket.connect((address, 80))
       # ~~~~ END CODE INSERT ~~~~
       print ('Connected to origin Server')
 
