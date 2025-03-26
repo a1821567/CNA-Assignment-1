@@ -5,6 +5,37 @@ import os
 import argparse
 import re
 
+# STEP 1
+# 1. What HTTP request will the browser send to the proxy?
+#     GET
+# 2. What will the HTTP response look like?
+#     HTTP/1.1 200 OK
+#     Date: ...
+#     Server: ...
+#     Content-Type: ...
+#     Content-Length: ...
+#     <html>...</html>
+# 3. In what ways will the response look different if it 
+# comes from the proxy than if it comes from the origin server 
+# (i.e. the server where the original page is stored?). You 
+# will not be able to test this yet, but what do you think 
+# would happen?
+#     Additional header to indicate that the response has come through a proxy
+
+# STEP 2
+# 1. How will the client know to talk to the proxy?
+#     Client will need to set the proxy address and port in their browser or network settings
+# 2. What host and port number will the proxy be on?
+#     Host: my computer?
+#     Port: whatever I choose?
+# 3. The proxy may need to connect to the origin server 
+# (if the web object is not in the cache), what host and 
+# port number will the proxy connect to?
+#     Default port: 80
+#     Host: from UR
+# 4. Where will the proxy get the web object information?
+#     From the origin server (make a GET request)
+
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
