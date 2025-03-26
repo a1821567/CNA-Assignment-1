@@ -71,7 +71,8 @@ except:
 try:
   # Listen on the server socket
   # ~~~~ INSERT CODE ~~~~
-
+  proxySocket.listen(1)
+  print("The proxy is ready to receive")
   # ~~~~ END CODE INSERT ~~~~
   print ('Listening to socket')
 except:
