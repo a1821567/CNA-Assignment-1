@@ -87,7 +87,7 @@ while True:
   # Accept connection from client and store in the clientSocket
   try:
     # ~~~~ INSERT CODE ~~~~
-
+    clientSocket, addr = proxySocket.accept() # connection to client, create new socket for communication with client
     # ~~~~ END CODE INSERT ~~~~
     print ('Received a connection')
   except:
@@ -97,6 +97,7 @@ while True:
   # Get HTTP request from client
   # and store it in the variable: message_bytes
   # ~~~~ INSERT CODE ~~~~
+  sentence = clientSocket.recv(1024) # receive up to 1024 bytes from client
   # ~~~~ END CODE INSERT ~~~~
   message = message_bytes.decode('utf-8')
   print ('Received request:')
