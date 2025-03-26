@@ -97,7 +97,7 @@ while True:
   # Get HTTP request from client
   # and store it in the variable: message_bytes
   # ~~~~ INSERT CODE ~~~~
-  sentence = clientSocket.recv(1024) # receive up to 1024 bytes from client
+  message_bytes = clientSocket.recv(1024) # receive up to 1024 bytes from client
   # ~~~~ END CODE INSERT ~~~~
   message = message_bytes.decode('utf-8')
   print ('Received request:')
