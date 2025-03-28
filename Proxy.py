@@ -35,7 +35,7 @@ import re
 #     Default port: 80
 #     Host: from URI
 # 4. Where will the proxy get the web object information?
-#     From the origin server (make a GET request)
+#    From the origin server (make a GET request)
 
 # 1MB buffer size
 BUFFER_SIZE = 1000000
@@ -151,11 +151,11 @@ while True:
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
-    clientSocket.sendall(cacheData)
+    clientSocket.sendall("".join(cacheData).encode())
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
-    print ('> ' + cacheData)
+    print ('> ' + "".join(cacheData))
   except:
     # cache miss.  Get resource from origin server
     originServerSocket = None
