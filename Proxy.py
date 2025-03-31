@@ -37,6 +37,11 @@ import re
 # 4. Where will the proxy get the web object information?
 #    From the origin server (make a GET request)
 
+# STEP 8
+# Should 301 and 302 responses be cached?
+#     301 indicates a permanent move, so should be cached.
+#     302 indicates a temporary move, so should not be cached.
+
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
@@ -135,7 +140,9 @@ while True:
 
   # Check if resource is in cache
   try:
-    cacheLocation = './' + hostname + resource
+    safeHostname = re.sub(r'[<>:"/\\|?*]', '_', hostname) # sanitise to prevent errors (particularly on Windows for testing)
+    safeResource = re.sub(r'[<>:"/\\|?*]', '_', resource)
+    cacheLocation = './' + safeHostname + safeResource
     if cacheLocation.endswith('/'):
         cacheLocation = cacheLocation + 'default'
 
@@ -143,7 +150,7 @@ while True:
 
     fileExists = os.path.isfile(cacheLocation)
     
-    # Check wether the file is currently in the cache
+    # Check whether the file is currently in the cache
     cacheFile = open(cacheLocation, "r")
     cacheData = cacheFile.readlines()
 
