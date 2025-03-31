@@ -140,22 +140,21 @@ while True:
 
   # Check if resource is in cache
   try:
-    if statusCode != 302: # no caching for 302
-      safeHostname = re.sub(r'[<>:"/\\|?*]', '_', hostname) # sanitise to prevent errors (particularly on Windows for testing)
-      safeResource = re.sub(r'[<>:"/\\|?*]', '_', resource)
-      cacheLocation = './' + safeHostname + safeResource
-      if cacheLocation.endswith('/'):
-          cacheLocation = cacheLocation + 'default'
+    safeHostname = re.sub(r'[<>:"/\\|?*]', '_', hostname) # sanitise to prevent errors (particularly on Windows for testing)
+    safeResource = re.sub(r'[<>:"/\\|?*]', '_', resource)
+    cacheLocation = './' + safeHostname + safeResource
+    if cacheLocation.endswith('/'):
+        cacheLocation = cacheLocation + 'default'
 
-      print ('Cache location:\t\t' + cacheLocation)
+    print ('Cache location:\t\t' + cacheLocation) # this is the expected cache location - but note that 302 responses will not be cached.
 
-      fileExists = os.path.isfile(cacheLocation)
-      
-      # Check whether the file is currently in the cache
-      cacheFile = open(cacheLocation, "r")
-      cacheData = cacheFile.readlines()
+    fileExists = os.path.isfile(cacheLocation)
+     
+    # Check whether the file is currently in the cache
+    cacheFile = open(cacheLocation, "r")
+    cacheData = cacheFile.readlines()
 
-      print ('Cache hit! Loading from cache file: ' + cacheLocation)
+    print ('Cache hit! Loading from cache file: ' + cacheLocation)
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
