@@ -207,11 +207,11 @@ while True:
       # ProxyServer finds a cache hit
       # Send back response to client 
       # ~~~~ INSERT CODE ~~~~
-      clientSocket.sendall("".join(cacheData).encode())
+      clientSocket.sendall(cacheData)
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
       print ('Sent to the client:')
-      print ('> ' + "".join(cacheData))
+      print ('> ' + cacheData.decode("utf-8", errors="ignore"))
     else:
       raise ValueError("Get resource from origin")
     
