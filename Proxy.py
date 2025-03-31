@@ -154,6 +154,19 @@ while True:
     cacheFile = open(cacheLocation, "r")
     cacheData = cacheFile.readlines()
 
+    # Extract max age
+    max_age = None
+    for line in cacheData:
+      if line.startswith("Cache-Control:"):
+        match = re.search(r"max-age=(\d+)", line)
+        if match:
+          max_age = int(match.group(1))
+          print(f"TESTING: Cache-Control max-age: {max_age} seconds")
+        else:
+          print("FAILED TO FIND MATCH")
+      else:
+        print("FAILED TO FIND CACHE CONTROL LINE")
+
     print ('Cache hit! Loading from cache file: ' + cacheLocation)
     # ProxyServer finds a cache hit
     # Send back response to client 
@@ -217,6 +230,7 @@ while True:
       responseStr = response.decode('utf-8', errors='ignore')
       responseLines = responseStr.split("\r\n")
       statusCode = int(responseLines[0].split()[1])
+
       # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
@@ -224,7 +238,7 @@ while True:
       clientSocket.sendall(response)
       # ~~~~ END CODE INSERT ~~~~
 
-      if statusCode != 302: # temporary redirect - do not cache response
+      if (statusCode != 302) and (): # temporary redirect - do not cache response
         # Create a new file in the cache for the requested file.
         cacheDir, file = os.path.split(cacheLocation)
         print ('cached directory ' + cacheDir)
