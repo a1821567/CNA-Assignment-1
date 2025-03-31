@@ -140,21 +140,22 @@ while True:
 
   # Check if resource is in cache
   try:
-    safeHostname = re.sub(r'[<>:"/\\|?*]', '_', hostname) # sanitise to prevent errors (particularly on Windows for testing)
-    safeResource = re.sub(r'[<>:"/\\|?*]', '_', resource)
-    cacheLocation = './' + safeHostname + safeResource
-    if cacheLocation.endswith('/'):
-        cacheLocation = cacheLocation + 'default'
+    if statusCode != 302: # no caching for 302
+      safeHostname = re.sub(r'[<>:"/\\|?*]', '_', hostname) # sanitise to prevent errors (particularly on Windows for testing)
+      safeResource = re.sub(r'[<>:"/\\|?*]', '_', resource)
+      cacheLocation = './' + safeHostname + safeResource
+      if cacheLocation.endswith('/'):
+          cacheLocation = cacheLocation + 'default'
 
-    print ('Cache location:\t\t' + cacheLocation)
+      print ('Cache location:\t\t' + cacheLocation)
 
-    fileExists = os.path.isfile(cacheLocation)
-    
-    # Check whether the file is currently in the cache
-    cacheFile = open(cacheLocation, "r")
-    cacheData = cacheFile.readlines()
+      fileExists = os.path.isfile(cacheLocation)
+      
+      # Check whether the file is currently in the cache
+      cacheFile = open(cacheLocation, "r")
+      cacheData = cacheFile.readlines()
 
-    print ('Cache hit! Loading from cache file: ' + cacheLocation)
+      print ('Cache hit! Loading from cache file: ' + cacheLocation)
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
@@ -217,7 +218,6 @@ while True:
       responseStr = response.decode('utf-8', errors='ignore')
       responseLines = responseStr.split("\r\n")
       statusCode = int(responseLines[0].split()[1])
-      print("BEEPUS BOOPUS STATUS CODE: " + str(statusCode) + " MMMMMMM YES") 
       # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
@@ -225,19 +225,20 @@ while True:
       clientSocket.sendall(response)
       # ~~~~ END CODE INSERT ~~~~
 
-      # Create a new file in the cache for the requested file.
-      cacheDir, file = os.path.split(cacheLocation)
-      print ('cached directory ' + cacheDir)
-      if not os.path.exists(cacheDir):
-        os.makedirs(cacheDir)
-      cacheFile = open(cacheLocation, 'wb')
+      if statusCode != 302: # temporary redirect - do not cache response
+        # Create a new file in the cache for the requested file.
+        cacheDir, file = os.path.split(cacheLocation)
+        print ('cached directory ' + cacheDir)
+        if not os.path.exists(cacheDir):
+          os.makedirs(cacheDir)
+        cacheFile = open(cacheLocation, 'wb')
 
-      # Save origin server response in the cache file
-      # ~~~~ INSERT CODE ~~~~
-      cacheFile.write(response)
-      # ~~~~ END CODE INSERT ~~~~
-      cacheFile.close()
-      print ('cache file closed')
+        # Save origin server response in the cache file
+        # ~~~~ INSERT CODE ~~~~
+        cacheFile.write(response)
+        # ~~~~ END CODE INSERT ~~~~
+        cacheFile.close()
+        print ('cache file closed')
 
       # finished communicating with origin server - shutdown socket writes
       print ('origin response received. Closing sockets')
