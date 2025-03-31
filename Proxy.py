@@ -156,20 +156,34 @@ while True:
     fileExists = os.path.isfile(cacheLocation)
      
     # Check whether the file is currently in the cache
-    cacheFile = open(cacheLocation, "r")
-    cacheData = cacheFile.readlines()
+    cacheFile = open(cacheLocation, "rb")
+    cacheData = cacheFile.read()
+
+    # Separate headers for processing as text
+    if isinstance(cacheData, bytes):
+      headerEndIndex = (cacheData.decode("utf-8", errors="ignore")).find("\r\n\r\n")
+      if headerEndIndex == -1:
+        headerEndIndex = (cacheData.decode("utf-8", errors="ignore")).find("\n\n")
+    else:
+      headerEndIndex = cacheData.find("\r\n\r\n")
+      if headerEndIndex == -1:
+        headerEndIndex = cacheData.find("\n\n")
+    
+    if headerEndIndex != -1:
+      headers = cacheData[:headerEndIndex].decode("utf-8", errors="ignore")
+      headers = headers.split("\r\n")
 
     # Extract max age
     maxAge = None
-    for line in cacheData:
+    for line in headers:
       if line.startswith("Cache-Control:"):
         match = re.search(r"max-age=(\d+)", line)
         if match:
           maxAge = int(match.group(1))
-      
+    
     # Extract date and time
     date = None
-    for line in cacheData:
+    for line in headers:
       if line.startswith("Date:"):
         date = line.split(':', 1)[1].strip()
 
