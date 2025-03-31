@@ -5,6 +5,9 @@ import os
 import argparse
 import re
 
+import time
+from email.utils import parsedate_tz, mktime_tz # for converting date header to timestamp
+
 # STEP 1
 # 1. What HTTP request will the browser send to the proxy?
 #     GET
@@ -155,27 +158,40 @@ while True:
     cacheData = cacheFile.readlines()
 
     # Extract max age
-    max_age = None
+    maxAge = None
     for line in cacheData:
       if line.startswith("Cache-Control:"):
         match = re.search(r"max-age=(\d+)", line)
         if match:
-          max_age = int(match.group(1))
-          print(f"TESTING: Cache-Control max-age: {max_age} seconds")
-        else:
-          print("FAILED TO FIND MATCH")
-      else:
-        print("FAILED TO FIND CACHE CONTROL LINE")
+          maxAge = int(match.group(1))
+    
+    # Extract date and time
+    date = None
+    for line in cacheData:
+      if line.startswith("Date:"):
+        date = line.split(':', 1)[1].strip()
 
-    print ('Cache hit! Loading from cache file: ' + cacheLocation)
-    # ProxyServer finds a cache hit
-    # Send back response to client 
-    # ~~~~ INSERT CODE ~~~~
-    clientSocket.sendall("".join(cacheData).encode())
-    # ~~~~ END CODE INSERT ~~~~
-    cacheFile.close()
-    print ('Sent to the client:')
-    print ('> ' + "".join(cacheData))
+    # Convert date and time string into timestamp
+    parsedDate = parsedate_tz(date)
+    cacheTimestamp = mktime_tz(parsedDate)
+
+    currentTime = time.time()
+
+    # Calculate age of response in seconds
+    responseAge = currentTime - cacheTimestamp
+
+    if responseAge <= maxAge:
+      print ('Cache hit! Loading from cache file: ' + cacheLocation)
+      # ProxyServer finds a cache hit
+      # Send back response to client 
+      # ~~~~ INSERT CODE ~~~~
+      clientSocket.sendall("".join(cacheData).encode())
+      # ~~~~ END CODE INSERT ~~~~
+      cacheFile.close()
+      print ('Sent to the client:')
+      print ('> ' + "".join(cacheData))
+    else:
+      raise ValueError("Get resource from origin")
   except:
     # cache miss.  Get resource from origin server
     originServerSocket = None
@@ -238,7 +254,7 @@ while True:
       clientSocket.sendall(response)
       # ~~~~ END CODE INSERT ~~~~
 
-      if (statusCode != 302) and (): # temporary redirect - do not cache response
+      if statusCode != 302: # temporary redirect - do not cache response
         # Create a new file in the cache for the requested file.
         cacheDir, file = os.path.split(cacheLocation)
         print ('cached directory ' + cacheDir)
