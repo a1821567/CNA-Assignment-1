@@ -173,18 +173,22 @@ while True:
       if line.startswith("Date:"):
         date = line.split(':', 1)[1].strip()
 
-    # Convert date and time string into timestamp
-    parsedDate = parsedate_tz(date)
-    cacheTimestamp = mktime_tz(parsedDate)
+    if date != None:
+      # Convert date and time string into timestamp
+      parsedDate = parsedate_tz(date)
+      cacheTimestamp = mktime_tz(parsedDate)
 
-    currentTime = time.time()
+      currentTime = time.time()
 
-    # Calculate age of response in seconds
-    responseAge = currentTime - cacheTimestamp
-    
+      # Calculate age of response in seconds
+      responseAge = currentTime - cacheTimestamp
+
+    else:
+      responseAge = 0
+
     # check if the cached response is new enough
     # if the Proxy has failed to obtain and process a max-age value, so should just allow the cache hit to go through
-    if (responseAge <= maxAge) or maxAge == None:
+    if maxAge == None or responseAge <= maxAge:
       print ('Cache hit! Loading from cache file: ' + cacheLocation)
       # ProxyServer finds a cache hit
       # Send back response to client 
