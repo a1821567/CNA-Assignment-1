@@ -145,6 +145,8 @@ while True:
   try:
     safeHostname = re.sub(r'[<>:"/\\|?*]', '_', hostname) # sanitise to prevent errors (particularly on Windows for testing)
     safeResource = re.sub(r'[<>:"/\\|?*]', '_', resource)
+    if resource[-1] == '/': # '/' at end of name should not be replaced
+      safeResource = safeResource[:-1] + '/'
     cacheLocation = './' + safeHostname + safeResource
     if cacheLocation.endswith('/'):
         cacheLocation = cacheLocation + 'default'
@@ -164,7 +166,7 @@ while True:
         match = re.search(r"max-age=(\d+)", line)
         if match:
           maxAge = int(match.group(1))
-    
+      
     # Extract date and time
     date = None
     for line in cacheData:
@@ -179,8 +181,10 @@ while True:
 
     # Calculate age of response in seconds
     responseAge = currentTime - cacheTimestamp
-
-    if responseAge <= maxAge:
+    
+    # check if the cached response is new enough
+    # if the Proxy has failed to obtain and process a max-age value, so should just allow the cache hit to go through
+    if (responseAge <= maxAge) or maxAge == None:
       print ('Cache hit! Loading from cache file: ' + cacheLocation)
       # ProxyServer finds a cache hit
       # Send back response to client 
@@ -192,6 +196,7 @@ while True:
       print ('> ' + "".join(cacheData))
     else:
       raise ValueError("Get resource from origin")
+    
   except:
     # cache miss.  Get resource from origin server
     originServerSocket = None
