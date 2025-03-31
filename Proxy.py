@@ -212,6 +212,12 @@ while True:
       # Get the response from the origin server
       # ~~~~ INSERT CODE ~~~~
       response = originServerSocket.recv(4096)
+
+      # Extract status code (for controlling cache handling for 302)
+      responseStr = response.decode('utf-8', errors='ignore')
+      responseLines = responseStr.split("\r\n")
+      statusCode = int(responseLines[0].split()[1])
+      print("BEEPUS BOOPUS STATUS CODE: " + str(statusCode) + " MMMMMMM YES") 
       # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
